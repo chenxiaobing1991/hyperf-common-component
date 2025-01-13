@@ -1,0 +1,46 @@
+{
+  "name": "cxb1991/hyperf-base",
+  "description": "公共装饰器",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "",
+  "keywords": [
+    "php",
+    "hyperf",
+    "base",
+  ],
+  "time": "2025-01-13",
+  "authors": [
+    {
+      "name": "陈火火",
+      "email": "123@qq.com",
+      "homepage": "",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "hyperf/db-connection": "~3.0.0",
+    "hyperf/database": "~3.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cxb\\Hyperf\\Common\\": "src/"
+    }
+  },
+  "suggest": {
+  },
+  "minimum-stability": "dev",
+  "config": {
+    "sort-packages": true
+  },
+  "scripts": {
+    "post-install-cmd": "我是陈火火",
+    "post-update-cmd": "我是陈火火"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
