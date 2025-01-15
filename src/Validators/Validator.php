@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace Cxb\Hyperf\Common\Validators;
 
 use Cxb\Hyperf\Common\Utils\HyperfUtil;
@@ -13,39 +14,41 @@ use Cxb\Hyperf\Common\Component;
 class Validator
 {
     use Component;
+
     private static $builtInValidators = [
-        'boolean' => 'App\Common\Validators\BooleanValidator',
-        'default' => 'App\Common\Validators\DefaultValueValidator',
-        'exist' => 'App\Common\Validators\ExistValidator',
-        'validate_exist' => 'App\Common\Validators\ExistValidator',
-        'filter' => 'App\Common\Validators\FilterValidator',
-        'in' => 'App\Common\Validators\RangeValidator',
+        'default' => DefaultValueValidator::class,
+        'exist' => ExistValidator::class,
+        'validate_exist' => ExistValidator::class,
+        'filter' => FilterValidator::class,
+        'in' => RangeValidator::class,
         'integer' => [
-            'class' => 'App\Common\Validators\NumberValidator',
+            'class' =>NumberValidator::class,
             'integerOnly' => true,
         ],
-        'number' => 'App\Common\Validators\NumberValidator',
-        'required' => 'App\Common\Validators\RequiredValidator',
-        'safe' => 'App\Common\Validators\SafeValidator',
-        'string' => 'App\Common\Validators\StringValidator',
-        'unique' => 'App\Common\Validators\UniqueValidator',
+        'number' =>NumberValidator::class,
+        'required' =>RequiredValidator::class,
+        'safe' =>SafeValidator::class,
+        'string' =>StringValidator::class,
+        'unique' =>UniqueValidator::class,
     ];
     public $isEmpty;
-    public $attributes=[];//属性注册
+    public $attributes = [];//属性注册
     public $message;//错误日志
-    public $on=[];//场景
+    public $on = [];//场景
 
     /**
      * 属性方法校验
      * @param $model
      * @param $attribute
      */
-    public function validateAttribute($model,$attribute){
-        $result=$this->validateValue($model->{$attribute});
+    public function validateAttribute($model, $attribute)
+    {
+        $result = $this->validateValue($model->{$attribute});
         if (!empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
         }
     }
+
     public function validateAttributes($model, $attributes = null)
     {
         if (is_array($attributes)) {
@@ -74,13 +77,14 @@ class Validator
      * @param $attributes
      * @param array $params
      */
-    final public static function createValidate($type,$model,$attributes,$params=[]){
+    final public static function createValidate($type, $model, $attributes, $params = [])
+    {
         $params['attributes'] = $attributes;
         /*  判断是否为闭包函数或内置方法  */
-        if($type instanceof \Closure || $model->hasMethod($type)){
+        if ($type instanceof \Closure || $model->hasMethod($type)) {
             $params['method'] = $type;
-            $params['class']=InlineValidator::class;
-        }elseif(isset(self::$builtInValidators[$type])){
+            $params['class'] = InlineValidator::class;
+        } elseif (isset(self::$builtInValidators[$type])) {
             $type = static::$builtInValidators[$type];
             if (is_array($type)) {
                 $params = array_merge($type, $params);
@@ -88,9 +92,9 @@ class Validator
                 $params['class'] = $type;
             }
 
-        }else{
-            $params['rules']=$type;
-            $params['class']=UnlineValidator::class;
+        } else {
+            $params['rules'] = $type;
+            $params['class'] = UnlineValidator::class;
         }
         return HyperfUtil::createObject($params);
     }
@@ -100,8 +104,9 @@ class Validator
      * @param $model
      * @param $errors
      */
-    public function setErrors($model,$errors){
-        if(method_exists($model,'setErrors')){
+    public function setErrors($model, $errors)
+    {
+        if (method_exists($model, 'setErrors')) {
             $model->setErrors($errors);
         }
     }
@@ -112,10 +117,11 @@ class Validator
      * @param $attribute
      * @param $message
      */
-    public function  addError($model,$attribute,$message,array $params=[]){
-        $params['attribute']=$model->getAttributeLabel($attribute);
-        if(method_exists($model,'addError')){
-            $model->addError($attribute,$this->getMessage($message,$params));
+    public function addError($model, $attribute, $message, array $params = [])
+    {
+        $params['attribute'] = $model->getAttributeLabel($attribute);
+        if (method_exists($model, 'addError')) {
+            $model->addError($attribute, $this->getMessage($message, $params));
         }
     }
 
@@ -124,12 +130,14 @@ class Validator
      * @param $message
      * @param $params
      */
-    private function getMessage($message,$params){
-        foreach($params as $key=>$value){
-            $message=str_replace("{$key}",$value,$message);
+    private function getMessage($message, $params)
+    {
+        foreach ($params as $key => $value) {
+            $message = str_replace("{$key}", $value, $message);
         }
         return $message;
     }
+
     public function isActive($scenario)
     {
         return in_array($scenario, $this->on, true) || empty($this->on);
@@ -140,7 +148,8 @@ class Validator
      * @param $value
      * @return bool|mixed
      */
-    public function isEmpty($value){
+    public function isEmpty($value)
+    {
         if ($this->isEmpty !== null) {
             return call_user_func($this->isEmpty, $value);
         } else {
