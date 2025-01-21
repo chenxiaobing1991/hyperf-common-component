@@ -33,14 +33,14 @@ class StringValidator extends Validator
         if ($this->message === null) {
             $this->message ='{attribute} must be a string.';
         }
-        if ($this->min !== null && $this->tooShort === null) {
-            $this->tooShort = '{attribute} should contain at least {min, number} {min, plural, one{character} other{characters}}.';
+        if ($this->min !== null) {
+            $this->tooShort = '{attribute} should contain at least {min}';
         }
-        if ($this->max !== null && $this->tooLong === null) {
-            $this->tooLong ='{attribute} should contain at most {max, number} {max, plural, one{character} other{characters}}.';
+        if ($this->max !== null) {
+            $this->tooLong ='{attribute} should contain at most {max} ';
         }
         if ($this->length !== null && $this->notEqual === null) {
-            $this->notEqual ='{attribute} should contain {length, number} {length, plural, one{character} other{characters}}.';
+            $this->notEqual ='{attribute} should contain {length}';
         }
     }
 

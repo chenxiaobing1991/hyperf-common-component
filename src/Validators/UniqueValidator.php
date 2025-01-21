@@ -45,32 +45,17 @@ class UniqueValidator extends Validator
 
         $query = $targetClass::query();
         $query->where($params);
-
         if ($this->filter instanceof \Closure) {
             call_user_func($this->filter, $query);
         } elseif ($this->filter !== null) {
             $query->andWhere($this->filter);
         }
-        if (!$model instanceof ActiveRecordInterface || $model->getIsNewRecord() || $model::className() !== $targetClass::className()) {
+        if(!$model instanceof ActiveRecordInterface ||!$model->exists){
             $exists = $query->exists();
-        } else {
+        }else{
             $models = $query->limit(2)->all();
             $n = count($models);
-            if ($n === 1) {
-                $keys = array_keys($params);
-                $pks = $targetClass::primaryKey();
-                sort($keys);
-                sort($pks);
-                if ($keys === $pks) {
-                    // primary key is modified and not unique
-                    $exists = $model->getOldPrimaryKey() != $model->getPrimaryKey();
-                } else {
-                    // non-primary key, need to exclude the current record based on PK
-                    $exists = $models[0]->getPrimaryKey() != $model->getOldPrimaryKey();
-                }
-            } else {
-                $exists = $n > 1;
-            }
+            $exists=$n > 1;
         }
         if ($exists) {
             if (count($targetAttribute) > 1) {
@@ -80,7 +65,7 @@ class UniqueValidator extends Validator
             }
         }
     }
-    
+
     /**
      * Builds and adds [[comboNotUnique]] error message to the specified model attribute.
      * @param \yii\base\Model $model the data model.
