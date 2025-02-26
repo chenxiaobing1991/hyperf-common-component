@@ -55,7 +55,11 @@ class UniqueValidator extends Validator
         }else{
             $models = $query->limit(2)->all();
             $n = count($models);
-            $exists=$n===1&&($one=$models[0])&&$model->getKey()===$one->getKey()?false:true;
+            if($n===1){
+                $exists=($one=$models[0])&&$model->getKey()===$one->getKey()?false:true;
+            }else{
+                $exists=$n>1;
+            }
         }
         if ($exists) {
             if (count($targetAttribute) > 1) {
