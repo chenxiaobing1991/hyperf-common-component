@@ -14,7 +14,7 @@ class ExistValidator extends Validator
     public $targetAttribute;
     public $filter;
     public $allowArray = false;
-
+    public $no=false;
 
     /**
      * @inheritdoc
@@ -58,10 +58,10 @@ class ExistValidator extends Validator
         $targetClass = $this->targetClass === null ? get_class($model) : $this->targetClass;
         $query = $this->createQuery($targetClass, $params);//具体的对象
         if (is_array($model->$attribute)) {
-            if ($query->count() != count($model->$attribute)) {
+            if (($query->count() != count($model->$attribute)&&!$this->no)||($query->count() == count($model->$attribute)&&$this->no)) {
                 $this->addError($model, $attribute, $this->message);
             }
-        } elseif (!$query->exists()) {
+        } elseif ((!$query->exists()&&!$this->no)||($query->exists()&&$this->no)) {
             $this->addError($model, $attribute, $this->message);
         }
     }
